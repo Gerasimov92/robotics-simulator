@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="model" default="$(find tricycle)/urdf/tricycle.xacro"/>
+  <arg name="rvizconfig" default="$(find tricycle)/rviz/test.rviz" />
+
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="tricycle_odom" pkg="tricycle" type="tricycle_odom" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+  <node name="velocity_control" pkg="tricycle" type="velocity_control" />
+
+</launch>
