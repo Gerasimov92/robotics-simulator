@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<robot name="tricycle" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="base_length" value="0.72"/>
+  <xacro:property name="wheel_diam" value="0.2"/>
+  <xacro:property name="rear_wheel_dist" value="0.4"/>
+  <xacro:property name="wheel_base" value="0.5"/>
+  <xacro:property name="pi" value="3.1415"/>
+
+  <material name="orange">
+    <color rgba="1 0.44 0 1"/>
+  </material>
+
+  <material name="black">
+    <color rgba="0.18 0.18 0.18 1"/>
+  </material>
+
+  <material name="gray">
+    <color rgba="0.7 0.7 0.7 1"/>
+  </material>
+
+  <xacro:macro name="default_inertial" params="mass">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="rear_wheel" params="prefix reflect">
+    <link name="${prefix}_wheel">
+      <visual>
+        <geometry>
+           <mesh filename="package://tricycle/meshes/wheel.stl"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://tricycle/meshes/wheel.stl"/>
+        </geometry>
+      </collision>
+      <xacro:default_inertial mass="1.4"/>
+    </link>
+
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel"/>
+      <axis xyz="0 1 0"/>
+      <origin xyz="0 ${-reflect*rear_wheel_dist/2} ${wheel_diam/2}" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/base.stl"/>
+      </geometry>
+      <material name="orange"/>
+      <origin xyz="${base_length/2-wheel_diam/2} 0 0.187" rpy="0 0 0"/>-->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/base.stl"/>
+      </geometry>
+      <origin xyz="${base_length/2-wheel_diam/2} 0 0.187" rpy="0 0 0"/>
+    </collision>
+    <xacro:default_inertial mass="2.4"/>
+  </link>
+
+  <xacro:rear_wheel prefix="right" reflect="1"/>
+  <xacro:rear_wheel prefix="left" reflect="-1"/>
+
+  <link name="caster">
+    <visual>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/caster.stl"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/caster.stl"/>
+      </geometry>
+    </collision>
+    <xacro:default_inertial mass="0.14"/>
+  </link>
+
+  <joint name="steering_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="caster"/>
+    <origin xyz="${wheel_base} 0 0.14125" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="${-pi/2}" upper="${pi/2}" velocity="0.5"/>
+  </joint>
+
+  <link name="front_wheel">
+    <visual>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/wheel.stl"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/wheel.stl"/>
+      </geometry>
+    </collision>
+    <xacro:default_inertial mass="1.4"/>
+  </link>
+
+  <joint name="front_wheel_joint" type="continuous">
+    <parent link="caster"/>
+    <child link="front_wheel"/>
+    <axis xyz="0 1 0"/>
+    <origin xyz="0 0 -0.04125" rpy="0 0 0"/>
+  </joint>
+
+  <link name="front_lidar">
+    <visual>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/lidar.stl"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://tricycle/meshes/lidar.stl"/>
+      </geometry>
+    </collision>
+    <xacro:default_inertial mass="0.2"/>
+  </link>
+
+  <joint name="front_lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_lidar"/>
+    <origin xyz="0 0 0.315" rpy="0 0 0"/>
+  </joint>
+
+</robot>
