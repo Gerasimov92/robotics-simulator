@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /RobotModel1
         - /TF1/Frames1
-        - /Map1/Status1
       Splitter Ratio: 0.640127
     Tree Height: 775
   - Class: rviz/Selection
@@ -85,6 +84,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        rear_lidar:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         right_wheel:
           Alpha: 1
           Show Axes: false
@@ -139,6 +143,35 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Rear LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.01
+      Style: Flat Squares
+      Topic: /vrep/rear_scan
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
     - Alpha: 0.7
       Class: rviz/Map
       Color Scheme: map
@@ -171,7 +204,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.1952
+      Distance: 10.5666
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1

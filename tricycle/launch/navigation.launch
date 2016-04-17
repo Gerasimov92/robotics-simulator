@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<launch>
+  
+  <param name="/use_sim_time" value="false"/>
+
+  <!--  for AMCL pose --> 
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="0.0"/>
+
+ 
+  <arg name="odom_frame_id"   default="odom"/>
+  <arg name="base_frame_id"   default="base_link"/>
+  <arg name="global_frame_id" default="map"/>
+  <arg name="odom_topic" default="odom" />
+  
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find tricycle)/navfiles/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find tricycle)/navfiles/costmap_common_params.yaml" command="load" ns="local_costmap" />   
+    <rosparam file="$(find tricycle)/navfiles/local_costmap_params.yaml" command="load" />   
+    <rosparam file="$(find tricycle)/navfiles/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find tricycle)/navfiles/tricycle_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find tricycle)/navfiles/move_base_params.yaml" command="load" />
+    <rosparam file="$(find tricycle)/navfiles/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find tricycle)/navfiles/navfn_global_planner_params.yaml" command="load" />
+
+    <param name="global_costmap/global_frame" value="$(arg global_frame_id)"/>
+    <param name="global_costmap/robot_base_frame" value="$(arg base_frame_id)"/>
+    <param name="local_costmap/global_frame" value="$(arg odom_frame_id)"/>
+    <param name="local_costmap/robot_base_frame" value="$(arg base_frame_id)"/>
+    <param name="TricyclePlannerROS/global_frame_id" value="$(arg odom_frame_id)"/>
+
+    <remap from="cmd_vel" to="cmd_vel"/>
+    <remap from="odom" to="$(arg odom_topic)"/>
+  </node>
+
+
+  <!--  ****** Maps *****  -->
+
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find tricycle)/navfiles/slam_gmapping_both_lidars.yaml">
+    <param name="frame_id" value="/map"/>
+  </node>
+
+
+  <include file="$(find tricycle)/navfiles/amcl.launch">
+    <arg name="scan_topic" value="scan"/>
+    <arg name="use_map_topic" value="true"/>
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+</launch>
+
+

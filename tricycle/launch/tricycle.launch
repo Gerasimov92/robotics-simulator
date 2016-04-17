@@ -3,6 +3,7 @@
 
   <arg name="model" default="$(find tricycle)/urdf/tricycle.xacro"/>
   <arg name="rvizconfig" default="$(find tricycle)/rviz/test.rviz" />
+<arg default="$(find tricycle)/launch/scan_unifier_config.yaml" name="param_file"/>
 
   <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
 
@@ -11,5 +12,10 @@
   <node name="tricycle_odom" pkg="tricycle" type="odom" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
   <node name="tricycle_control" pkg="tricycle" type="control" />
+
+  <node name="scan_unifier" output="screen" type="scan_unifier_node" pkg="cob_scan_unifier">
+    <rosparam command="load" file="$(arg param_file)"/>
+    <remap to="/scan" from="scan_unified"/>
+  </node>
 
 </launch>

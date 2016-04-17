@@ -14,8 +14,11 @@ int main(int argc, char **argv)
 
     while(n.ok())
     {
-        broadcaster.sendTransform(tf::StampedTransform(tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, 0.35)),
+        broadcaster.sendTransform(tf::StampedTransform(tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.5, 0.0, 0.35)),
                                   ros::Time::now(),"base_link", "front_scan"));
+
+        broadcaster.sendTransform(tf::StampedTransform(tf::Transform(tf::createQuaternionFromYaw(M_PI), tf::Vector3(0.0, 0.0, 0.35)),
+                                  ros::Time::now(),"base_link", "rear_scan"));
         r.sleep();
     }
 

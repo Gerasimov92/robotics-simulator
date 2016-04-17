@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="rosservice" type="rosservice" name="vrepStopSim" args="call /vrep/simRosStopSimulation"/>
+  <include file="$(find tricycle)/launch/tricycle.launch"/>
+  <include file="$(find tricycle)/launch/navigation.launch"/>
+
+</launch>

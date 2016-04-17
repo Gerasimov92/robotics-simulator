@@ -22,5 +22,5 @@ target_link_libraries(control ${catkin_LIBRARIES})
 add_executable(tf_broadcaster src/tf_broadcaster.cpp)
 target_link_libraries(tf_broadcaster ${catkin_LIBRARIES})
 
-install(DIRECTORY launch meshes rviz urdf
+install(DIRECTORY launch meshes navfiles rviz urdf
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

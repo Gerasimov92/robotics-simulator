@@ -1,0 +1,4 @@
+#Scan_unifier_config-parameters
+
+input_scans: ["vrep/front_scan","vrep/rear_scan"]
+loop_rate: 10.0

@@ -8,7 +8,8 @@
 #include "vrep_common/VrepInfo.h"
 
 //---------------------------------------------------------------------------
-#define WHEEL_BASE          0.5 // The distance in m from the center wheel to the middle two wheel
+// Колесная база и радиус колес (в метрах)
+#define WHEEL_BASE          0.5
 #define WHEEL_RADIUS        0.1
 
 //---------------------------------------------------------------------------
@@ -42,19 +43,19 @@ void UpdateOdom(double dt, const ros::Time &odomTime)
     double linearDist = linearVel * dt;
     double angularDist = angularVel * dt;
 
-    // Integrate odometry
+    // Интегрируем
     if(fabs(angularDist) < 1e-6)
     {
         double direction = th + angularDist * 0.5;
 
-        // Runge-Kutta 2nd order integration:
+        // Рунге-Кутта 2го порядка
         x += linearDist * cos(direction);
         y += linearDist * sin(direction);
         th += angularDist;
     }
     else
     {
-        // Exact integration (should solve problems when angular is zero):
+        // Явная интеграция
         double headingOld = th;
         double r = linearDist / angularDist;
         th += angularDist;
@@ -64,7 +65,7 @@ void UpdateOdom(double dt, const ros::Time &odomTime)
 
     geometry_msgs::Quaternion odomQuat = tf::createQuaternionMsgFromYaw(th);
 
-    // Publish the transform over tf
+    // Публикуем преобразованием СК через tf
     geometry_msgs::TransformStamped odomTrans;
     odomTrans.header.stamp = odomTime;
     odomTrans.header.frame_id = "odom";
@@ -76,7 +77,7 @@ void UpdateOdom(double dt, const ros::Time &odomTime)
     tf::TransformBroadcaster broadcaster;
     broadcaster.sendTransform(odomTrans);
 
-    // Publish odom topic
+    // Публикуем одометрию
     nav_msgs::Odometry odom;
     odom.header.stamp = odomTime;
     odom.header.frame_id = "odom";
@@ -97,7 +98,7 @@ void UpdateOdom(double dt, const ros::Time &odomTime)
 //---------------------------------------------------------------------------
 void UpdateJointState()
 {
-    // Update joint_state
+    // Обновляем положение звеньев
     jointState.header.stamp = ros::Time::now();
     jointState.name[0] ="steering_joint";
     jointState.position[0] = alpha;
@@ -113,14 +114,14 @@ void UpdateJointState()
 //---------------------------------------------------------------------------
 void tricycleVelCallback(const std_msgs::Float32::ConstPtr& msg)
 {
-    // Front wheel speed in m/s
+    // Скорость переднего колеса в м/с
     wheelSpeed = msg->data;
 }
 
 //---------------------------------------------------------------------------
 void tricycleAngleCallback(const std_msgs::Float32::ConstPtr& msg)
 {
-    // Front wheel rotational angle in rad
+    // Угол поворота переднего колеса в рад
     alpha = msg->data * M_PI / 180.0;
 
     UpdateJointState();
@@ -130,29 +131,10 @@ void tricycleAngleCallback(const std_msgs::Float32::ConstPtr& msg)
 void vrepInfoCallback(const vrep_common::VrepInfo::ConstPtr& msg)
 {
     currentTime = ros::Time::now();
-    //double dt = (currentTime - lastTime).toSec();
-    //lastTime = currentTime;
-
     currentSimTime = msg->simulationTime.data;
-    //double dt = msg->timeStep.data;
     double dt = currentSimTime - lastSimTime;
-    //ROS_INFO("dt = %f", dt);
-    ROS_INFO("dt = %f", currentSimTime);
 
     UpdateOdom(dt, currentTime);
-
-    /*tf::TransformBroadcaster broadcaster;
-    geometry_msgs::TransformStamped odomTrans;
-    odomTrans.header.frame_id = "odom";
-    odomTrans.child_frame_id = "axis";
-    // Update transform
-    odomTrans.header.stamp = ros::Time::now();
-    odomTrans.transform.translation.x = x;
-    odomTrans.transform.translation.y = y;
-    odomTrans.transform.translation.z = 0;
-    odomTrans.transform.rotation = tf::createQuaternionMsgFromYaw(th);
-    // Send the transform
-    broadcaster.sendTransform(odomTrans);*/
 
     lastSimTime = currentSimTime;
 }
@@ -188,26 +170,16 @@ int main(int argc, char **argv)
     {
         ros::spinOnce();
 
-        //currentTime = ros::Time::now();
-        //double dt = (currentTime - lastTime).toSec();
-
-        //UpdateOdom(dt, currentTime);
-
-        // Update transform for URDF (axis)
+        // Обновляем преобразование СК для визуализации URDF
         odomTrans.header.stamp = ros::Time::now();
         odomTrans.transform.translation.x = x;
         odomTrans.transform.translation.y = y;
         odomTrans.transform.translation.z = 0;
         odomTrans.transform.rotation = tf::createQuaternionMsgFromYaw(th);
-        // Send the transform
         broadcaster.sendTransform(odomTrans);
-
-        //lastTime = currentTime;
 
         loopRate.sleep();
     }
-
-    //ros::spin();
 
     return 0;
 }

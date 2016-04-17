@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="xmin" default="-16"/>
+  <arg name="ymin" default="-16"/>
+  <arg name="xmax" default="16"/>
+  <arg name="ymax" default="16"/>
+  <arg name="delta" default="0.05"/>
+  
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="xmin" value="$(arg xmin)" />
+    <param name="ymin" value="$(arg ymin)" />
+    <param name="xmax" value="$(arg xmax)" />
+    <param name="ymax" value="$(arg ymax)" />
+    <param name="delta" value="$(arg delta)" />
+    <!--<remap to="vrep/front_scan" from="scan"/>-->
+  </node>
+
+</launch>
+  
+  
